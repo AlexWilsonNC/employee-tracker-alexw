@@ -32,5 +32,5 @@ VALUES ('Stephen', 'Hunter', 'Associate', 'Nora Worley'),
        ('Nora', 'Worley', 'CS Team Lead', 'Anthony Nimmons'),
        ('Eddie', 'Sitavi', 'Sales Manager', 'Anthony Nimmons'),
        ('Jeremiah', 'Schmutz', 'Financing Supervisor', 'Anthony Nimmons'),
-       ('Anthony', 'Nimmons', 'President', '');
+       ('Anthony', 'Nimmons', 'President', NULL);
        
