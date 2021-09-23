@@ -81,12 +81,12 @@ function viewAllEmployees() {
     ON role.id = employee.role_id
     JOIN department
     ON role.department_id = department.id
-    ORDER BY employee.id`, 
-    function (err, res) {
-        if (err) return console.log(err);
-        console.table(res);
-        openingPrompt();
-    });
+    ORDER BY employee.id`,
+        function (err, res) {
+            if (err) return console.log(err);
+            console.table(res);
+            openingPrompt();
+        });
 };
 
 function addEmployee() {
@@ -105,7 +105,7 @@ function addEmployee() {
             },
             {
                 name: 'roleName',
-                type: 'list',
+                type: 'rawlist',
                 message: 'What is their assigned role?',
                 choices: [
                     'Help Desk',
@@ -130,12 +130,61 @@ function addEmployee() {
                 })
         });
     });
-}
+};
+
+function updateEmployeeRole() {
+    db.query(`SELECT * FROM employee`, function (err, employees) {
+        if (err) return console.log(err);
+        inquirer.prompt([
+            {
+                name: 'whichEmployeee',
+                type: 'list',
+                message: 'Which employee is changing roles?',
+                choices: employees.map(employee =>
+                ({
+                    name: employee.first_name + ' ' + employee.last_name,
+                    value: employee.id
+                })
+                )
+            },
+            {
+                name: 'updatedRole',
+                type: 'input',
+                message: 'Which role is being assigned to this employee?',
+                choices: [
+                    'Help Desk',
+                    'Call Center',
+                    'Regional Director',
+                    'National Coordinator',
+                    'Budget Analyst',
+                    'Financial Planner',
+                    'CS Team Lead',
+                    'Sales Manager',
+                    'Financing Supervisor'
+                ]
+            }
+        ]).then((res) => {
+            db.query(`
+            UPDATE employee SET role_id = ? WHERE id = ?`, [res.whichEmployeee, res.updatedRole],
+                function (err) {
+                    if (err) return console.log(err);
+                    openingPrompt();
+                })
+        })
+    });
+};
+
+function viewAllRoles() {
+    db.query(`SELECT * FROM role`, function (err, res) {
+        if (err) return console.log(err);
+        console.table(res);
+        openingPrompt();
+    });
+};
 
 function addRole() {
-    db.query(`SELECT * FROM department`, function (err, results) {
+    db.query(`SELECT * FROM department`, function (err, res) {
         if (err) return console.log(err);
-
         inquirer.prompt([
             {
                 name: 'roleName',
@@ -158,15 +207,15 @@ function addRole() {
                 type: 'input',
                 message: 'What is this role\'s salary?'
             }
-        ]).then(response => {
-            console.log(response);
+        ]).then(res => {
+            console.log(res);
             db.query(`INSERT INTO role
             (title, department_id, salary)
             VALUES (?, ?, ?)`,
-                [response.roleName, response.roleSalary, response.departmentUnder],
+                [res.roleName, res.departmentUnder, res.roleSalary],
                 function (err) {
                     if (err) return console.log(err);
-                    cohnsole.table(department);
+                    console.table(department);
                     openingPrompt();
                 })
         }
@@ -174,10 +223,13 @@ function addRole() {
     })
 };
 
-// SELECT role.name, department.name
-// FROM role
-// INNER JOIN department
-// ON role.department_id = department.id;
+function viewAllDepartments() {
+    db.query(`SELECT * FROM department`, function (err, res) {
+        if (err) return console.log(err);
+        console.table(res);
+        openingPrompt();
+    });
+};
 
 function addDepartment() {
     inquirer.prompt([
@@ -186,9 +238,9 @@ function addDepartment() {
             type: input,
             message: 'What\'s the name of this new Department?'
         }
-    ]).then((response) => {
+    ]).then((res) => {
         db.query(`INSERT INTO department (name)
-        VALUES (?)`, response.departmentName, function (err) {
+        VALUES (?)`, res.departmentName, function (err) {
             if (err) return console.log(err);
             console.table(department);
             openingPrompt();
