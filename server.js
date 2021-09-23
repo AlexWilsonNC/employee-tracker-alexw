@@ -87,6 +87,49 @@ function viewAllEmployees() {
         console.table(res);
         openingPrompt();
     });
+};
+
+function addEmployee() {
+    db.query(`SELECT * FROM role`, function (err, data) {
+        if (err) return console.log(err);
+        inquirer.prompt([
+            {
+                name: 'firstName',
+                type: 'input',
+                message: 'What\'s their first name?'
+            },
+            {
+                name: 'lastName',
+                type: 'input',
+                message: 'What\'s their last name?'
+            },
+            {
+                name: 'roleName',
+                type: 'list',
+                message: 'What is their assigned role?',
+                choices: [
+                    'Help Desk',
+                    'Call Center',
+                    'Regional Director',
+                    'National Coordinator',
+                    'Budget Analyst',
+                    'Financial Planner',
+                    'CS Team Lead',
+                    'Sales Manager',
+                    'Financing Supervisor'
+                ]
+            },
+        ]).then((res) => {
+            db.query(`INSERT INTO employee 
+                (first_name, last_name, role_id)
+                VALUES (?, ?, ?)`,
+                [res.firstName, res.lastName, res.roleName],
+                function (err) {
+                    if (err) return console.log(err);
+                    openingPrompt();
+                })
+        });
+    });
 }
 
 function addRole() {

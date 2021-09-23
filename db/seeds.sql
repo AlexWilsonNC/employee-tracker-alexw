@@ -5,13 +5,10 @@ VALUES ('Customer Service'),
        ('Leadership');
 
 INSERT INTO role (title, department_id, salary)
-VALUES ('Associate', 1, 24000),
-       ('Help Desk', 1, 30000),
+VALUES ('Help Desk', 1, 30000),
        ('Call Center', 1, 32000),
-       ('Trainee', 2, 20000),
        ('Regional Director', 2, 43000),
        ('National Coordinator', 2, 62000),
-       ('Accountant', 3, 45000),
        ('Budget Analyst', 3, 48000),
        ('Financial Planner', 3, 50000),
        ('CS Team Lead', 4, 52000),
@@ -20,17 +17,14 @@ VALUES ('Associate', 1, 24000),
        ('President', 4, 120000);
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
-VALUES ('Stephen', 'Hunter', 1, 10),
-       ('Zach', 'Bivens', 1, 10),
-       ('Mike', 'Reynolds', 1, 10),
-       ('David', 'Suddaby', 2, 11),
-       ('Chip', 'Richey', 2, 11),
-       ('Grant', 'Manley', 2, 11),
-       ('Chris', 'Watkins', 3, 12),
-       ('Blaine', 'Hill', 3, 12),
-       ('Corey', 'Mesimer', 3, 12),
-       ('Nora', 'Worley', 4, 13),
-       ('Eddie', 'Sitavi', 4, 13),
-       ('Jeremiah', 'Schmutz', 4, 13),
-       ('Anthony', 'Nimmons', 4, NULL);
+VALUES ('Zach', 'Bivens', 1, 7),
+       ('Mike', 'Reynolds', 2, 7),
+       ('Chip', 'Richey', 3, 8),
+       ('Grant', 'Manley', 4, 8),
+       ('Blaine', 'Hill', 5, 9),
+       ('Corey', 'Mesimer', 6, 9),
+       ('Nora', 'Worley', 7, 10),
+       ('Eddie', 'Sitavi', 8, 10),
+       ('Jeremiah', 'Schmutz', 9, 10),
+       ('Anthony', 'Nimmons', 10, NULL);
        
