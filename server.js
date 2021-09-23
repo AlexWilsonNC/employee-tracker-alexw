@@ -1,14 +1,9 @@
-const express = require('express');
+const app = require('express')();
 const mysql = require('mysql2');
+// consoleTable is in the instructions, so using it so console/terminal is greyed out I believe
 const consoleTable = require('console.table');
 const inquirer = require('inquirer');
-
 const PORT = process.env.PORT || 3009;
-const app = express();
-
-// even needed?
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
 
 const db = mysql.createConnection(
     {
@@ -42,8 +37,8 @@ function openingPrompt() {
                 'Never Mind'
             ]
         }
-    ]).then((res) => {
-        switch (res.firstOptions) {
+    ]).then((answer) => {
+        switch (answer.firstOptions) {
             case 'View all Employees':
                 viewAllEmployees();
                 break;
@@ -66,8 +61,7 @@ function openingPrompt() {
                 addDepartment();
                 break;
             case 'Never Mind':
-                db.end();
-                break;
+                process.exit(0);
         }
     })
 };
@@ -107,17 +101,12 @@ function addEmployee() {
                 name: 'roleName',
                 type: 'rawlist',
                 message: 'What is their assigned role?',
-                choices: [
-                    'Help Desk',
-                    'Call Center',
-                    'Regional Director',
-                    'National Coordinator',
-                    'Budget Analyst',
-                    'Financial Planner',
-                    'CS Team Lead',
-                    'Sales Manager',
-                    'Financing Supervisor'
-                ]
+                choices: data.map(role =>
+                ({
+                    name: role.title,
+                    value: role.id
+                })
+                )
             },
         ]).then((res) => {
             db.query(`INSERT INTO employee 
@@ -133,14 +122,14 @@ function addEmployee() {
 };
 
 function updateEmployeeRole() {
-    db.query(`SELECT * FROM employee`, function (err, employees) {
+    db.query(`SELECT * FROM employee; SELECT * FROM role`, function (err, results) {
         if (err) return console.log(err);
         inquirer.prompt([
             {
                 name: 'whichEmployeee',
                 type: 'list',
                 message: 'Which employee is changing roles?',
-                choices: employees.map(employee =>
+                choices: results[0].map(employee =>
                 ({
                     name: employee.first_name + ' ' + employee.last_name,
                     value: employee.id
@@ -149,19 +138,13 @@ function updateEmployeeRole() {
             },
             {
                 name: 'updatedRole',
-                type: 'input',
+                type: 'rawlist',
                 message: 'Which role is being assigned to this employee?',
-                choices: [
-                    'Help Desk',
-                    'Call Center',
-                    'Regional Director',
-                    'National Coordinator',
-                    'Budget Analyst',
-                    'Financial Planner',
-                    'CS Team Lead',
-                    'Sales Manager',
-                    'Financing Supervisor'
-                ]
+                choices: results[1].map(role =>
+                    ({
+                        name: role.title,
+                        value: role.id
+                    }))
             }
         ]).then((res) => {
             db.query(`
@@ -171,7 +154,7 @@ function updateEmployeeRole() {
                     openingPrompt();
                 })
         })
-    });
+    })
 };
 
 function viewAllRoles() {
@@ -195,27 +178,25 @@ function addRole() {
                 name: 'departmentUnder',
                 type: 'list',
                 message: 'Under which department will this role belong?',
-                choices: [
-                    1,
-                    2,
-                    3,
-                    4
-                ]
+                choices: res.map(department =>
+                ({
+                    name: department.name,
+                    value: department.id
+                }))
             },
             {
                 name: 'roleSalary',
                 type: 'input',
                 message: 'What is this role\'s salary?'
             }
-        ]).then(res => {
-            console.log(res);
+        ]).then((data) => {
             db.query(`INSERT INTO role
             (title, department_id, salary)
             VALUES (?, ?, ?)`,
-                [res.roleName, res.departmentUnder, res.roleSalary],
+                [data.roleName, data.departmentUnder, data.roleSalary],
                 function (err) {
                     if (err) return console.log(err);
-                    console.table(department);
+                    console.log(`Added ${data.roleName} to Roles!`);
                     openingPrompt();
                 })
         }
@@ -235,14 +216,14 @@ function addDepartment() {
     inquirer.prompt([
         {
             name: 'departmentName',
-            type: input,
-            message: 'What\'s the name of this new Department?'
+            type: 'input',
+            message: 'What is the name of this new Department?'
         }
-    ]).then((res) => {
+    ]).then((data) => {
         db.query(`INSERT INTO department (name)
-        VALUES (?)`, res.departmentName, function (err) {
+        VALUES (?)`, data.departmentName, function (err) {
             if (err) return console.log(err);
-            console.table(department);
+            console.log(`Added ${data.departmentName} to Departments`);
             openingPrompt();
         })
     })
