@@ -122,14 +122,14 @@ function addEmployee() {
 };
 
 function updateEmployeeRole() {
-    db.query(`SELECT * FROM employee; SELECT * FROM role`, function (err, results) {
+    db.query(`SELECT * FROM employee`, function (err, results) {
         if (err) return console.log(err);
         inquirer.prompt([
             {
                 name: 'whichEmployeee',
                 type: 'list',
                 message: 'Which employee is changing roles?',
-                choices: results[0].map(employee =>
+                choices: results.map(employee =>
                 ({
                     name: employee.first_name + ' ' + employee.last_name,
                     value: employee.id
@@ -140,7 +140,7 @@ function updateEmployeeRole() {
                 name: 'updatedRole',
                 type: 'rawlist',
                 message: 'Which role is being assigned to this employee?',
-                choices: results[1].map(role =>
+                choices: results.map(role =>
                     ({
                         name: role.title,
                         value: role.id
