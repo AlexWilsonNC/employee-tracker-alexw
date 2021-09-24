@@ -84,7 +84,7 @@ function viewAllEmployees() {
 };
 
 function addEmployee() {
-    db.query(`SELECT * FROM role`, function (err, data) {
+    db.query(`SELECT * FROM role`, function (err, res) {
         if (err) return console.log(err);
         inquirer.prompt([
             {
@@ -101,18 +101,18 @@ function addEmployee() {
                 name: 'roleName',
                 type: 'rawlist',
                 message: 'What is their assigned role?',
-                choices: data.map(role =>
+                choices: res.map(role =>
                 ({
-                    name: role.title,
+                    name: role.title, ///////////////////////////////////////////
                     value: role.id
                 })
                 )
             },
-        ]).then((res) => {
+        ]).then((data) => {
             db.query(`INSERT INTO employee 
                 (first_name, last_name, role_id)
                 VALUES (?, ?, ?)`,
-                [res.firstName, res.lastName, res.roleName],
+                [data.firstName, data.lastName, data.roleName],
                 function (err) {
                     if (err) return console.log(err);
                     openingPrompt();
@@ -122,14 +122,14 @@ function addEmployee() {
 };
 
 function updateEmployeeRole() {
-    db.query(`SELECT * FROM employee`, function (err, results) {
+    db.query(`SELECT * FROM employee`, function (err, res) {
         if (err) return console.log(err);
         inquirer.prompt([
             {
                 name: 'whichEmployeee',
                 type: 'list',
                 message: 'Which employee is changing roles?',
-                choices: results.map(employee =>
+                choices: res.map(employee => /////////////////////////////////////////////////////
                 ({
                     name: employee.first_name + ' ' + employee.last_name,
                     value: employee.id
@@ -140,15 +140,15 @@ function updateEmployeeRole() {
                 name: 'updatedRole',
                 type: 'rawlist',
                 message: 'Which role is being assigned to this employee?',
-                choices: results.map(role =>
+                choices: res.map(role =>
                     ({
                         name: role.title,
                         value: role.id
                     }))
             }
-        ]).then((res) => {
+        ]).then((data) => {
             db.query(`
-            UPDATE employee SET role_id = ? WHERE id = ?`, [res.whichEmployeee, res.updatedRole],
+            UPDATE employee SET role_id = ? WHERE id = ?`, [data.whichEmployeee, data.updatedRole],
                 function (err) {
                     if (err) return console.log(err);
                     openingPrompt();
